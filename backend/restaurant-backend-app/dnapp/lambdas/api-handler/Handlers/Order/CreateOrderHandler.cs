@@ -83,7 +83,7 @@ public class CreateOrderHandler : IApiRequestHandler
 
             var order = OrderMapper.ToOrderEntity(
                 createOrderRequest,
-                reservation.CustomerId ?? string.Empty,
+                string.IsNullOrWhiteSpace(reservation.CustomerId) ? waiterId : reservation.CustomerId,
                 locationAddress,
                 reservationTime);
 

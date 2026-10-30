@@ -170,7 +170,7 @@ public class ReservationService : IReservationService
         if (waiter.LocationId != table.LocationId)
         {
             throw new ActionForbiddenException(
-                $"Action forbidden: You are assigned to location '{waiter.LocationId}', but table '{table.Id}' belongs to location '{table.LocationId}'.");
+                "Вибачте, вам заборонено створювати бронювання в цьому ресторані.");
         }
 
         if (string.IsNullOrWhiteSpace(request.CustomerEmail))

@@ -54,6 +54,8 @@ public class ReservationServiceTests
         Table table,
         WaiterListItem waiter)
     {
+        location.Id = "foreign-location";
+        waiter.LocationId = "waiter-location";
         table.Id = request.TableId;
         table.LocationId = location.Id;
         waiter.LocationId = location.Id;
@@ -277,8 +279,11 @@ public class ReservationServiceTests
             .Setup(r => r.GetTableByIdAsync(request.TableId))
             .ReturnsAsync(table);
 
-        await Assert.ThrowsAsync<ActionForbiddenException>(
+        var exception = await Assert.ThrowsAsync<ActionForbiddenException>(
             () => _reservationService.CreateReservationAsync(request, waiter.UserId, isWaiter: true, _mockLogger.Object));
+
+        Assert.Equal("Вибачте, вам заборонено створювати бронювання в цьому ресторані.", exception.Message);
+        _mockReservationRepository.Verify(repository => repository.SaveReservationAsync(It.IsAny<Reservation>()), Times.Never);
     }
 
     [Theory, AutoData]

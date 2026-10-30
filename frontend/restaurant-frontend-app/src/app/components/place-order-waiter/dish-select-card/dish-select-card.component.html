@@ -1,7 +1,7 @@
 <div class="dish-card">
   <div class="column">
     <div class="dish-image">
-      <img [src]="dish.imageUrl" alt="{{ dish.name }}" />
+      <img appImageFallback [src]="dish.imageUrl" alt="{{ dish.name }}" />
     </div>
   </div>
   <div class="column">

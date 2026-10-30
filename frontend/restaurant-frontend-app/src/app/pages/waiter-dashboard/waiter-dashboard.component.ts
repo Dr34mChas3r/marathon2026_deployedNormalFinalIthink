@@ -293,7 +293,7 @@ export class WaiterDashboardComponent implements OnInit {
     }
 
     this.reservationService
-      .makeReservation$(tableId, timeRange, guests, customerEmail)
+      .makeReservation$(tableId, timeRange, guests, customerEmail, true)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (reservation) => {
@@ -304,7 +304,17 @@ export class WaiterDashboardComponent implements OnInit {
           this.showMakeReservationModal.set(false);
           this.toast.success('New reservation has been created successfully.', 'Success');
         },
-        error: () => this.toast.error('The reservation could not be created.', 'Reservation'),
+        error: (error: unknown) => {
+          if (error instanceof HttpErrorResponse && error.status === 403) {
+            this.toast.error(
+              'Вибачте, вам заборонено створювати бронювання в цьому ресторані.',
+              'Доступ заборонено'
+            );
+            return;
+          }
+
+          this.toast.error('The reservation could not be created.', 'Reservation');
+        },
       });
   }
 

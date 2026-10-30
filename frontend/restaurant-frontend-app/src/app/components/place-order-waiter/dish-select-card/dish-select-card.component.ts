@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { DishListResponse } from '@app/models/dishes/dish-list-response.model';
 import { CommonModule } from '@angular/common';
+import { ImageFallbackDirective } from '@app/shared/directives/image-fallback.directive';
 
 @Component({
   selector: 'app-dish-select-card',
-  imports: [CommonModule],
+  imports: [CommonModule, ImageFallbackDirective],
   templateUrl: './dish-select-card.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './dish-select-card.component.scss',

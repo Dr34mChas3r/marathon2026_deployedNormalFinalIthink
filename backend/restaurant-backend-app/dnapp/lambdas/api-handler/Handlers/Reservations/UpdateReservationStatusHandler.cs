@@ -55,7 +55,9 @@ public class UpdateReservationStatusHandler : IApiRequestHandler
         }
 
         bool isCompleted = updateRequest.NewStatus == ReservationStatus.Completed;
-        if (isCompleted && !HasFeedback(reservationId!)) // When we'll implement order placement, add check for orders.
+        if (isCompleted &&
+            !await HasFeedbackAsync(reservationId!) &&
+            !await HasOrderAsync(reservationId!))
         {
             return ResponseBuilder.CreateErrorResponse(
                 400,
@@ -190,6 +192,7 @@ public class UpdateReservationStatusHandler : IApiRequestHandler
                 400,
                 "Cannot update a cancelled or completed reservation status.",
                 logger);
+            return false;
         }
 
         if (newStatus == reservation.Status)
@@ -198,21 +201,22 @@ public class UpdateReservationStatusHandler : IApiRequestHandler
                 400,
                 "The new status is the same as the current status.",
                 logger);
+            return false;
         }
 
         response = null;
         return true;
     }
 
-    private bool HasFeedback(string reservationId)
+    private async Task<bool> HasFeedbackAsync(string reservationId)
     {
-        var feedback = _feedbackService.GetFeedbackForReservationAsync(reservationId).Result;
+        var feedback = await _feedbackService.GetFeedbackForReservationAsync(reservationId);
         return feedback?.Count > 0;
     }
 
-    private bool HasOrder(string reservationId)
+    private async Task<bool> HasOrderAsync(string reservationId)
     {
-        var order = _orderService.GetOrderByReservationIdAsync(reservationId).Result;
-        return order is not null && order.Dishes.Count > 0;
+        var order = await _orderService.GetOrderByReservationIdAsync(reservationId);
+        return order?.Dishes is { Count: > 0 };
     }
 }

@@ -20,7 +20,7 @@
                 <div class="list">
                     @for (it of items(); track it.dishId) {
                         <div class="item">
-                            <img class="img" [src]="it.imageUrl" alt="" />
+                            <img appImageFallback class="img" [src]="it.imageUrl" alt="" />
 
                             <div class="info">
                                 <div class="name">{{ it.title }}</div>

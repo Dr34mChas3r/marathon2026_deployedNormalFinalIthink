@@ -257,6 +257,9 @@
         }
       },
       "/locations/{locationId}/tables/all": {
+        "enable_cors": {
+          "state": true
+        },
         "GET": {
           "authorization_type": "cognito_authorizer",
           "integration_type": "lambda",
@@ -1399,5 +1402,4 @@
     }
   }
 }
-
 

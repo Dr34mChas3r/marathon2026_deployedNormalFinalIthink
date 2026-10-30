@@ -10,6 +10,7 @@
         @for (item of order().orderItems; track item.dish.id) {
         <div class="order-item-dish">
           <img
+            appImageFallback
             class="dish-image"
             [src]="item.dish.imageUrl"
             [alt]="item.dish.name"

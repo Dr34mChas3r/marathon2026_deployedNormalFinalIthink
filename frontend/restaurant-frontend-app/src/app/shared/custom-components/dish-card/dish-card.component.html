@@ -11,7 +11,7 @@
     @if (isUnavailable()) {
       <div class="status-badge">{{ dishStateLabel() }}</div>
     }
-    <img [src]="dish().imageUrl" alt="{{ dish().name }}" class="dish-image" />
+    <img appImageFallback [src]="dish().imageUrl" alt="{{ dish().name }}" class="dish-image" />
     <div class="dish-info">
       <div class="dish-heading">
         <div class="dish-name">{{ dish().name }}</div>
@@ -28,4 +28,3 @@
     </div>
     <ng-content select="[dish-footer]"></ng-content>
   </div>
-

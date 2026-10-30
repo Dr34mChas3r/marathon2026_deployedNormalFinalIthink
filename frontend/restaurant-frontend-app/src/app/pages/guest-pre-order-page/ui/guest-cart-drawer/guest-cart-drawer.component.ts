@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { GuestCartItem } from '@app/pages/guest-pre-order-page/state/guest-preorder.store'; 
+import { ImageFallbackDirective } from '@app/shared/directives/image-fallback.directive';
 
 @Component({
     standalone: true,
     selector: 'app-guest-cart-drawer',
     templateUrl: './guest-cart-drawer.component.html',
     styleUrl: './guest-cart-drawer.component.scss',
-    imports: [CurrencyPipe],
+    imports: [CurrencyPipe, ImageFallbackDirective],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GuestCartDrawerComponent {

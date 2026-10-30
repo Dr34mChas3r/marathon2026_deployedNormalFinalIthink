@@ -8,11 +8,12 @@ import {
 } from '@angular/core';
 
 import { Order } from '@app/models/orders/order.model';
+import { ImageFallbackDirective } from '@app/shared/directives/image-fallback.directive';
 
 @Component({
   selector: 'app-not-submitted-order',
   standalone: true,
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, ImageFallbackDirective],
   templateUrl: './not-submitted-order.component.html',
   styleUrl: './not-submitted-order.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

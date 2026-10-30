@@ -16,6 +16,7 @@
       @for (item of participant().items; track item.dish.id) {
         <li class="participant-card__item">
           <img
+            appImageFallback
             [src]="item.dish.imageUrl || 'assets/img/dish.png'"
             [alt]="item.dish.name"
             width="40"

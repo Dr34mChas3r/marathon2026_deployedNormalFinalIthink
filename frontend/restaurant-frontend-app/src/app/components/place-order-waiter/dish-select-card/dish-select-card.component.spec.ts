@@ -13,6 +13,21 @@ describe('DishSelectCardComponent', () => {
 
     fixture = TestBed.createComponent(DishSelectCardComponent);
     component = fixture.componentInstance;
+    component.dish = {
+      id: 'dish-id',
+      name: 'Test dish',
+      imageUrl: 'https://invalid.example/dish.jpg',
+      price: 10,
+      state: 'Available',
+      weight: '200g',
+      dishType: 'Main',
+      description: '',
+      calories: '0',
+      proteins: '0',
+      carbohydrates: '0',
+      fats: '0',
+      vitamins: '',
+    };
     fixture.detectChanges();
   });
 

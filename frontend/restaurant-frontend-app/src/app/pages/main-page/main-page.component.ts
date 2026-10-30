@@ -21,13 +21,14 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs/operators';
 
 import { LoginModalComponent } from '@app/auth/components/login/login-modal/login-modal.component';
+import { ImageFallbackDirective } from '@app/shared/directives/image-fallback.directive';
 
 @Component({
   selector: 'app-main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.scss'],
   standalone: true,
-  imports: [CommonModule, RouterLink, LocationCardComponent, FeedbackWindowComponent, LoginModalComponent, ],
+  imports: [CommonModule, RouterLink, LocationCardComponent, FeedbackWindowComponent, LoginModalComponent, ImageFallbackDirective],
   changeDetection: ChangeDetectionStrategy.Eager,
   providers: [LocationsService, DishesService, ReservationService, UsersService, FeedbacksService],
 })
