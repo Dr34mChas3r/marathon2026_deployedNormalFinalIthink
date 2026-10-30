@@ -1,0 +1,79 @@
+<main class="kitchen-display">
+  <a class="back-link" href="/waiter-reservations">← Waiter reservations</a>
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">WAITER WORKSPACE</p>
+      <h1>Kitchen Display</h1>
+      <p class="description">Track submitted pre-orders from preparation to serving.</p>
+    </div>
+    <button class="refresh-button" type="button" (click)="refresh()" [disabled]="loading()">
+      Refresh
+    </button>
+  </header>
+
+  @if (lastUpdated(); as updated) {
+    <p class="updated-at" aria-live="polite">
+      @if (refreshError()) {
+        Couldn’t refresh. Showing data from
+      } @else {
+        Updated at
+      }
+      {{ updated | date:'HH:mm:ss' }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p class="state-message">Loading reservations…</p>
+  } @else if (error()) {
+    <p class="state-message state-message--error" role="alert">{{ error() }}</p>
+  } @else if (tickets().length === 0) {
+    <section class="empty-state">
+      <h2>No orders to prepare</h2>
+      <p>Submitted reservation orders will appear here.</p>
+    </section>
+  } @else {
+    <section class="ticket-list" aria-label="Kitchen orders">
+      @for (reservation of tickets(); track reservation.id) {
+        <article class="ticket">
+          <div class="ticket__heading">
+            <div>
+              <p class="ticket__table">{{ tableNames()[reservation.tableId] || 'Reservation' }}</p>
+              <p class="ticket__time">
+                {{ reservation.startTime | date:'EEE, MMM d · HH:mm' }} · {{ reservation.guestCount }} guests
+              </p>
+            </div>
+            <span class="status-badge" [class.status-badge--preparing]="reservation.preOrder && reservation.preOrder.status === 4"
+              [class.status-badge--ready]="reservation.preOrder && reservation.preOrder.status === 5">
+              {{ statusLabel(reservation.preOrder!.status) }}
+            </span>
+          </div>
+
+          <p class="reservation-state">{{ reservationStatusLabel(reservation.status) }}</p>
+
+          <ul class="dish-list">
+            @for (item of reservation.preOrder!.orderItems; track item.dish.id) {
+              <li>
+                <span class="dish-quantity">× {{ item.quantity }}</span>
+                <span class="dish-name">{{ item.dish.name }}</span>
+              </li>
+            }
+          </ul>
+
+          <button
+            class="action-button"
+            type="button"
+            [disabled]="updatingReservationIds().has(reservation.id) || isPreparingBlocked(reservation)"
+            [attr.aria-label]="actionLabel(reservation.preOrder!.status) + ' order for ' + (tableNames()[reservation.tableId] || 'reservation')"
+            (click)="updateStatus(reservation)"
+          >
+            @if (isPreparingBlocked(reservation)) {
+              Waiting for reservation to start
+            } @else {
+              {{ updatingReservationIds().has(reservation.id) ? 'Updating…' : actionLabel(reservation.preOrder!.status) }}
+            }
+          </button>
+        </article>
+      }
+    </section>
+  }
+</main>

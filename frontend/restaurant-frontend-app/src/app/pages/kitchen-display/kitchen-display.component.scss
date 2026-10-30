@@ -1,0 +1,201 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f5f7f5;
+}
+
+.kitchen-display {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 36px 0 64px;
+}
+
+.page-heading,
+.ticket__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: #35784a;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: #438856;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 8px;
+  color: #20352a;
+  font-size: clamp(28px, 4vw, 40px);
+}
+
+.description,
+.updated-at,
+.ticket__time,
+.reservation-state {
+  color: #64736a;
+}
+
+.description {
+  margin-bottom: 0;
+}
+
+.refresh-button,
+.action-button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 20px;
+  background: #35784a;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.refresh-button:disabled,
+.action-button:disabled {
+  background: #9daaa1;
+  cursor: not-allowed;
+}
+
+.updated-at {
+  margin: 20px 0;
+  font-size: 13px;
+}
+
+.state-message,
+.empty-state {
+  margin-top: 30px;
+  border-radius: 12px;
+  padding: 28px;
+  background: #fff;
+  color: #44544a;
+}
+
+.state-message--error {
+  color: #9b2828;
+}
+
+.empty-state h2 {
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  margin-bottom: 0;
+}
+
+.ticket-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 18px;
+}
+
+.ticket {
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
+  border: 1px solid #e1e9e2;
+  border-radius: 12px;
+  padding: 22px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgb(22 46 28 / 5%);
+}
+
+.ticket__table {
+  margin-bottom: 5px;
+  color: #20352a;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.ticket__time {
+  margin-bottom: 0;
+  font-size: 13px;
+}
+
+.status-badge {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: #fff0d6;
+  color: #8a5710;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-badge--preparing {
+  background: #e6efff;
+  color: #294d8c;
+}
+
+.status-badge--ready {
+  background: #e0f3e5;
+  color: #24633a;
+}
+
+.reservation-state {
+  margin: 16px 0 10px;
+  font-size: 13px;
+}
+
+.dish-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.dish-list li {
+  display: flex;
+  gap: 12px;
+  color: #314238;
+}
+
+.dish-quantity {
+  min-width: 42px;
+  color: #438856;
+  font-weight: 700;
+}
+
+.action-button {
+  width: 100%;
+  margin-top: auto;
+}
+
+@media (max-width: 520px) {
+  .kitchen-display {
+    width: min(100% - 24px, 1120px);
+    padding-top: 24px;
+  }
+
+  .page-heading {
+    align-items: flex-start;
+  }
+
+  .refresh-button {
+    padding: 0 14px;
+  }
+
+  .ticket {
+    padding: 18px;
+  }
+}

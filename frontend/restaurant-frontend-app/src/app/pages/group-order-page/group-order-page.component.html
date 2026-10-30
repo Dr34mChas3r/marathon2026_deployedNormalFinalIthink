@@ -1,0 +1,117 @@
+<main class="group-order">
+  @if (loading()) {
+    <p class="group-order__message" role="status">Loading group pre-order…</p>
+  } @else if (loadError()) {
+    <section class="group-order__message group-order__message--error" role="alert">
+      <h1>{{ loadError() }}</h1>
+      <button type="button" class="button button--primary" (click)="load()">Try again</button>
+    </section>
+  } @else if (invite(); as reservation) {
+    <header class="group-order__header">
+      <div>
+        <p class="group-order__eyebrow">Owner review</p>
+        <h1>Group Pre-Order</h1>
+        <p class="group-order__reservation">
+          {{ reservation.LocationAddress }}
+          <span aria-hidden="true">·</span>
+          {{ reservation.StartTime | date: 'MMM d, y, h:mm a' }}
+          –
+          {{ reservation.EndTime | date: 'h:mm a' }}
+        </p>
+        @if (sessions(); as group) {
+          <p class="group-order__count">{{ group.participants.length }} of {{ reservation.MaxGuestCount }} guests</p>
+        }
+      </div>
+      <span class="group-order__badge" [class.group-order__badge--sent]="groupStatus() !== 'Open'">
+        {{ statusLabel() }}
+      </span>
+    </header>
+
+    @if (pendingGuestCount() > 0 && groupStatus() === 'Open') {
+      <p class="group-order__notice" role="status">
+        {{ pendingGuestCount() }} participant{{ pendingGuestCount() === 1 ? " hasn't" : "s haven't" }} submitted their cart yet —
+        their dishes won't be included in the order.
+      </p>
+    }
+
+    <section class="group-order__participants" aria-labelledby="participants-heading">
+      <h2 id="participants-heading">Participants</h2>
+      <ul>
+        @for (participant of participants(); track participant.id) {
+          <li>
+            <app-participant-card
+              [participant]="participant"
+              [isMe]="participant.id === ownerSessionId()"
+            />
+          </li>
+        }
+      </ul>
+      @if (!hasAnyDishes()) {
+        <p class="group-order__empty">Participants haven't added any dishes yet</p>
+      }
+    </section>
+
+    <section class="group-order__summary" aria-labelledby="summary-heading">
+      <div class="group-order__summary-heading">
+        <div>
+          <p class="group-order__eyebrow">Restaurant order</p>
+          <h2 id="summary-heading">Consolidated pre-order</h2>
+        </div>
+        <p class="group-order__total">
+          <span>Grand Total</span>
+          <strong>{{ consolidatedOrder().total | currency }}</strong>
+        </p>
+      </div>
+
+      @if (consolidatedOrder().items.length) {
+        <ul class="group-order__order-items">
+          @for (item of consolidatedOrder().items; track item.dish.id) {
+            <li>
+              <span>{{ item.dish.name }} × {{ item.quantity }}</span>
+              <strong>{{ item.dish.price * item.quantity | currency }}</strong>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="group-order__empty">No submitted dishes to include.</p>
+      }
+
+      @if (groupStatus() === 'Open') {
+        <button
+          type="button"
+          class="button button--primary group-order__submit"
+          [disabled]="!canSubmit()"
+          (click)="openSubmitDialog()"
+        >
+          Submit Pre-Order
+        </button>
+      }
+    </section>
+
+    @if (updatedAt(); as lastUpdated) {
+      <footer class="group-order__sync">
+        <span>Updated at {{ lastUpdated | date: 'HH:mm:ss' }}</span>
+        @if (syncError()) {
+          <span role="alert">Couldn't refresh. Showing data from {{ lastUpdated | date: 'HH:mm:ss' }}.</span>
+        }
+        @if (groupStatus() === 'Open') {
+          <button type="button" class="button button--secondary" (click)="refresh()">Refresh</button>
+        }
+      </footer>
+    }
+  }
+</main>
+
+@if (showSubmitDialog()) {
+  <app-modal title="Submit group pre-order" (closed)="closeSubmitDialog()">
+    <p>Submit the consolidated pre-order to the restaurant?</p>
+    <div modal-actions>
+      <button type="button" class="button button--secondary" [disabled]="submitting()" (click)="closeSubmitDialog()">
+        Cancel
+      </button>
+      <button type="button" class="button button--primary" [disabled]="submitting()" (click)="submit()">
+        {{ submitting() ? 'Submitting…' : 'Submit' }}
+      </button>
+    </div>
+  </app-modal>
+}
