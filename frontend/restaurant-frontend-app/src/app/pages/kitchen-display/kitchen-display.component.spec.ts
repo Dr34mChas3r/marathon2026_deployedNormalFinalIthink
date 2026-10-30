@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { AuthenticationService } from '@app/auth/services/authentication.service';
 import { OrderStatus } from '@app/models/orders/order.model';
@@ -56,8 +57,9 @@ describe('KitchenDisplayComponent', () => {
 
   beforeEach(() => {
     reservationService = jasmine.createSpyObj<ReservationService>('ReservationService', ['getReservationsForUser$']);
-    ordersService = jasmine.createSpyObj<PreOrdersService>('PreOrdersService', ['updateKitchenStatus']);
-    reservationService.getReservationsForUser$.and.returnValue(of([reservation]));
+    ordersService = jasmine.createSpyObj<PreOrdersService>('PreOrdersService', ['getByReservationId', 'updateKitchenStatus']);
+    reservationService.getReservationsForUser$.and.returnValue(of([{ ...reservation, preOrder: undefined }]));
+    ordersService.getByReservationId.and.returnValue(of(reservation.preOrder!));
     ordersService.updateKitchenStatus.and.returnValue(of({ status: OrderStatus.Preparing }));
 
     TestBed.configureTestingModule({
@@ -98,6 +100,23 @@ describe('KitchenDisplayComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('No orders to prepare');
+  });
+
+  it('loads each reservation order before building the kitchen queue', () => {
+    expect(ordersService.getByReservationId).toHaveBeenCalledWith('reservation-1');
+    expect(fixture.nativeElement.textContent).toContain('Soup');
+  });
+
+  it('treats a missing reservation order as an empty queue entry', () => {
+    ordersService.getByReservationId.and.returnValue(
+      throwError(() => new HttpErrorResponse({ status: 404 }))
+    );
+
+    fixture.componentInstance.refresh();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('No orders to prepare');
+    expect(fixture.componentInstance.error()).toBeNull();
   });
 
   it('keeps the previous tickets visible when a refresh fails', () => {

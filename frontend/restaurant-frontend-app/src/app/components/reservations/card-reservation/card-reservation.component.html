@@ -15,12 +15,13 @@
       @if (role() === Roles.WAITER) {
         <div class="change-table">
           <app-custom-select
+            #tableSelect
             class="table-select"
             placeholder="Table"
             [showIcon]="false"
             [options]="availableTableOptions()"
             [selectedOption]="displayedTableLabel()"
-            (optionSelected)="onTableChange($event)"
+            (optionSelected)="onTableChange($event, tableSelect)"
           />
         </div>
       }
@@ -173,14 +174,6 @@
       }
 
       @case (ReservationStatusCustomer.InProgress) {
-        <button
-          type="button"
-          class="button button--tertiary button--large"
-          (click)="cancelReservation.emit(r().id)"
-        >
-          Cancel
-        </button>
-
         @if (
           role() === Roles.WAITER &&
           canOpenWaiterPreOrder()

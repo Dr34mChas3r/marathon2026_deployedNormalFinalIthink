@@ -8,8 +8,11 @@ using APIHandler.Services.Auth;
 using APIHandler.Services.Feedbacks;
 using System;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using APIHandler.Repositories.Reservations;
 
 namespace APIHandler.Handlers.Feedbacks;
 
@@ -17,11 +20,16 @@ public class CreateFeedbackHandler : IApiRequestHandler
 {
     private readonly IFeedbackService _feedbackService;
     private readonly IUserService _userService;
+    private readonly IReservationRepository _reservationRepository;
 
-    public CreateFeedbackHandler(IFeedbackService feedbackService, IUserService userService)
+    public CreateFeedbackHandler(
+        IFeedbackService feedbackService,
+        IUserService userService,
+        IReservationRepository reservationRepository)
     {
         _feedbackService = feedbackService ?? throw new ArgumentNullException(nameof(feedbackService));
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+        _reservationRepository = reservationRepository ?? throw new ArgumentNullException(nameof(reservationRepository));
     }
 
     public async Task<APIGatewayProxyResponse> HandleRequest(APIGatewayProxyRequest request, ILambdaContext context)
@@ -32,9 +40,14 @@ public class CreateFeedbackHandler : IApiRequestHandler
         }
 
         Roles? userRole = await GetUserRoleAsync(feedbackRequest!.UserId);
-        if (userRole is not null or Roles.Customer)
+        if (feedbackRequest.UserId is not null && userRole != Roles.Customer)
         {
             return ResponseBuilder.CreateErrorResponse(403, "Only customers can create feedback.", context.Logger);
+        }
+
+        if (feedbackRequest.UserId is null && !await HasValidAnonymousTokenAsync(feedbackRequest))
+        {
+            return ResponseBuilder.CreateErrorResponse(403, "A valid feedback token is required.", context.Logger);
         }
 
         var existingFeedback = await _feedbackService.GetFeedbackForReservationAsync(feedbackRequest!.ReservationId);
@@ -80,5 +93,23 @@ public class CreateFeedbackHandler : IApiRequestHandler
             return null;
         }
         return await _userService.GetUserRoleAsync(userId);
+    }
+
+    private async Task<bool> HasValidAnonymousTokenAsync(CreateFeedbackRequest feedbackRequest)
+    {
+        if (string.IsNullOrWhiteSpace(feedbackRequest.Token))
+        {
+            return false;
+        }
+
+        var reservation = await _reservationRepository.GetReservationByIdAsync(feedbackRequest.ReservationId);
+        if (string.IsNullOrEmpty(reservation?.FeedbackToken))
+        {
+            return false;
+        }
+
+        return CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(feedbackRequest.Token),
+            Encoding.UTF8.GetBytes(reservation.FeedbackToken));
     }
 }

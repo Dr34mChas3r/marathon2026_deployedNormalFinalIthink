@@ -64,6 +64,21 @@ describe('tokenInterceptor', () => {
     expect(receivedStatus).toBe(400);
   });
 
+  it('silently rethrows 404s when a reservation has no pre-order', () => {
+    const orderUrl = 'https://test.api/orders/reservation-1';
+    let receivedStatus: number | undefined;
+    spyOn(console, 'log');
+
+    http.get(orderUrl).subscribe({ error: (error) => (receivedStatus = error.status) });
+    httpMock
+      .expectOne(orderUrl)
+      .flush({ message: 'Order not found.' }, { status: 404, statusText: 'Not Found' });
+
+    expect(receivedStatus).toBe(404);
+    expect(toastService.error).not.toHaveBeenCalled();
+    expect(console.log).not.toHaveBeenCalled();
+  });
+
   it('does not show a toast for a silent guest request', () => {
     let receivedStatus: number | undefined;
     const guestUrl = 'https://test.api/guest/groups/group-1/sessions';

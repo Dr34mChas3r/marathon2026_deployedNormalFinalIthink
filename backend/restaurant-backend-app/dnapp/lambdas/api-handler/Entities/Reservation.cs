@@ -46,4 +46,8 @@ public class Reservation
     [DynamoDBProperty("status")]
     [JsonPropertyName("status")]
     public ReservationStatus Status { get; set; }
+
+    [DynamoDBProperty("feedbackToken")]
+    [JsonIgnore]
+    public string? FeedbackToken { get; set; }
 }

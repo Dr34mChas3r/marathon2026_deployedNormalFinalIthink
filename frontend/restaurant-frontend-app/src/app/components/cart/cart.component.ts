@@ -9,10 +9,12 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchError, forkJoin, of } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { Order, OrderStatus } from '@app/models/orders/order.model';
 import { PreOrdersService } from '@app/services/pre-orders/pre-orders.service';
+import { ReservationService } from '@app/services/reservation/reservation.service';
 
 import { CancelOrderModalComponent } from './components/cancel-order-modal/cancel-order-modal.component';
 import { NotSubmittedOrderComponent } from './components/not-submitted-order/not-submitted-order.component';
@@ -36,6 +38,7 @@ export class CartComponent implements OnInit {
   private readonly preOrdersService =
     inject(PreOrdersService);
 
+  private readonly reservationService = inject(ReservationService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -283,12 +286,28 @@ export class CartComponent implements OnInit {
   }
 
   private loadOrders(): void {
-    this.preOrdersService
-      .getPreOrders()
+    forkJoin({
+      orders: this.preOrdersService.getPreOrders(),
+      reservations: this.reservationService.getReservationsForUser$().pipe(
+        catchError(() => of([]))
+      ),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (orders) => {
-          this.orders.set(orders);
+        next: ({ orders, reservations }) => {
+          const reservationsById = new Map(
+            reservations.map((reservation) => [reservation.id, reservation])
+          );
+          this.orders.set(orders.map((order) => {
+            const reservation = reservationsById.get(order.reservationId);
+            return reservation
+              ? {
+                ...order,
+                reservationStartTime: reservation.startTime,
+                reservationEndTime: reservation.endTime,
+              }
+              : order;
+          }));
         },
         error: (error) => {
           console.error('Error loading orders:', error);

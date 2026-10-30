@@ -2,7 +2,16 @@
   <div class="text">
     <span class="body-bold">
       Pre-order #{{ order().orderId }}
-      ({{ order().reservationAddress }}, {{ order().reservationTime }})
+      (
+      {{ order().reservationAddress }},
+      @if (order().reservationStartTime && order().reservationEndTime) {
+        {{ order().reservationStartTime | date:'mediumDate' }},
+        {{ order().reservationStartTime | date:'shortTime' }} -
+        {{ order().reservationEndTime | date:'shortTime' }}
+      } @else {
+        {{ order().reservationTime }}
+      }
+      )
     </span>
 
     @for (item of order().orderItems; track item.dish.id) {

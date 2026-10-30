@@ -201,6 +201,7 @@ public static class RouteRegistry
             new RouteHandler(new Route(HttpMethods.DELETE, "/guest/groups/{groupReservationId}/sessions/{guestSessionId}"), ActivatorUtilities.CreateInstance<DeleteGuestSessionHandler>(provider))
         ];
         List<RouteHandler> GetAuxiliaryRoutes() => [
+            new RouteHandler(new Route(HttpMethods.GET, "/feedback/token"), ActivatorUtilities.CreateInstance<GetFeedbackTokenHandler>(provider)),
             new RouteHandler(new Route(HttpMethods.GET, "/feedback"), ActivatorUtilities.CreateInstance<GetFeedbackForLocationHandler>(provider)),
             new RouteHandler(new Route(HttpMethods.POST, "/feedback"), ActivatorUtilities.CreateInstance<CreateFeedbackHandler>(provider)),
             new RouteHandler(new Route(HttpMethods.PUT, "/feedback"), ActivatorUtilities.CreateInstance<UpdateFeedbackHandler>(provider)),

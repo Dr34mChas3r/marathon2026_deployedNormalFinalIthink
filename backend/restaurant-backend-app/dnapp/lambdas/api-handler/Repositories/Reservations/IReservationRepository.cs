@@ -11,4 +11,5 @@ public interface IReservationRepository
     Task<IEnumerable<Reservation>> GetReservationsByWaiterIdAsync(string waiterId);
     Task<IEnumerable<Reservation>> GetReservationsByCustomerIdAsync(string userId);
     Task SaveReservationAsync(Reservation reservation);
+    Task<string?> GetOrCreateFeedbackTokenAsync(string reservationId);
 }

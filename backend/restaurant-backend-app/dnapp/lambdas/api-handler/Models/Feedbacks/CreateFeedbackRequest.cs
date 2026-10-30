@@ -10,6 +10,9 @@ public class CreateFeedbackRequest
     [JsonPropertyName("userId")]
     public string? UserId { get; set; } // nullable for future implementation of anonymous feedback
 
+    [JsonPropertyName("token")]
+    public string? Token { get; set; }
+
     [JsonPropertyName("comment")]
     public string? Comment { get; set; }
 

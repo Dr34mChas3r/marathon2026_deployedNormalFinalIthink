@@ -5,6 +5,8 @@ export interface Order {
   reservationAddress: string;
   reservationTime: string;
   reservationId: string;
+  reservationStartTime?: string | Date;
+  reservationEndTime?: string | Date;
   orderItems: OrderItem[];
   status: number;
 }

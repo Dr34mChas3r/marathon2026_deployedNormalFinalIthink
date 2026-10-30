@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 
 import { Order } from '@app/models/orders/order.model';
 import { PreOrdersService } from '@app/services/pre-orders/pre-orders.service';
+import { ReservationService } from '@app/services/reservation/reservation.service';
 
 import { CartComponent } from './cart.component';
 
@@ -12,6 +13,7 @@ describe('CartComponent', () => {
   let fixture: ComponentFixture<CartComponent>;
 
   let preOrdersServiceMock: jasmine.SpyObj<PreOrdersService>;
+  let reservationServiceMock: jasmine.SpyObj<ReservationService>;
   let routerMock: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
@@ -33,6 +35,11 @@ describe('CartComponent', () => {
     );
 
     preOrdersServiceMock.getPreOrders.and.returnValue(of([]));
+    reservationServiceMock = jasmine.createSpyObj<ReservationService>(
+      'ReservationService',
+      ['getReservationsForUser$']
+    );
+    reservationServiceMock.getReservationsForUser$.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [CartComponent],
@@ -44,6 +51,10 @@ describe('CartComponent', () => {
         {
           provide: Router,
           useValue: routerMock,
+        },
+        {
+          provide: ReservationService,
+          useValue: reservationServiceMock,
         },
       ],
     }).compileComponents();
@@ -116,6 +127,35 @@ describe('CartComponent', () => {
         .unsubmittedOrders()
         .map((order) => order.status),
     ).toEqual([0]);
+  });
+
+  it('uses the current reservation time instead of the stale order snapshot', () => {
+    const order = {
+      orderId: 'order-1',
+      reservationId: 'reservation-1',
+      reservationAddress: 'Restaurant',
+      reservationTime: 'Oct 30, 2026, 4:30 PM - 6:00 PM',
+      status: 3,
+      orderItems: [],
+    } as Order;
+    preOrdersServiceMock.getPreOrders.and.returnValue(of([order]));
+    reservationServiceMock.getReservationsForUser$.and.returnValue(of([{
+      id: 'reservation-1',
+      tableId: 'table-5',
+      customerId: 'customer-1',
+      startTime: new Date('2026-10-30T16:30:00Z'),
+      endTime: new Date('2026-10-30T18:00:00Z'),
+      guestCount: 1,
+      status: 0,
+      locationAddress: 'Restaurant',
+      tableCapacity: 6,
+      waiterId: 'waiter-1',
+    }]));
+
+    component.ngOnInit();
+
+    expect(component.orders()[0].reservationStartTime).toEqual(new Date('2026-10-30T16:30:00Z'));
+    expect(component.orders()[0].reservationEndTime).toEqual(new Date('2026-10-30T18:00:00Z'));
   });
 
   it('should navigate to reservations when goToReservations is called', () => {

@@ -193,7 +193,11 @@ export class CardReservationComponent {
     this.preOrder.emit(order);
   }
 
-  onTableChange(label: string): void {
+  onTableChange(
+    label: string,
+    select: CustomSelectComponent,
+  ): void {
+    select.selectedOption.set(this.displayedTableLabel());
     const reservation = this.r();
     const newTableId =
       this.availableTableOptionsMap().get(label);

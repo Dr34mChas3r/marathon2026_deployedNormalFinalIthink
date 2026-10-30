@@ -34,6 +34,7 @@ export class FeedbackQrModalComponent implements OnInit, OnDestroy {
 
   private qrCode!: QRCodeStyling;
   feedbackUrl!: string;
+  errorMessage = '';
 
   private readonly qrService = inject(FeedbackQrService);
 
@@ -46,7 +47,6 @@ export class FeedbackQrModalComponent implements OnInit, OnDestroy {
           this.waiterName,
           this.isNewFeedback
         );
-        console.log('Feedback link:', this.feedbackUrl);
         this.qrCode = new QRCodeStyling({
           width: Math.min(window.innerWidth * 0.8, 300),
           height: Math.min(window.innerWidth * 0.8, 300),
@@ -63,6 +63,7 @@ export class FeedbackQrModalComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error fetching feedback token:', error);
+        this.errorMessage = 'Could not load the feedback QR code. Please try again later.';
       },
     });
   }

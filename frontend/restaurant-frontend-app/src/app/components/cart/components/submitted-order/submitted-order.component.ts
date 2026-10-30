@@ -1,4 +1,4 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,7 +12,7 @@ import { Order, OrderStatus } from '@app/models/orders/order.model';
 @Component({
   selector: 'app-submitted-order',
   standalone: true,
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, DatePipe],
   templateUrl: './submitted-order.component.html',
   styleUrl: './submitted-order.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

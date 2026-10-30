@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, interval, of, switchMap } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { catchError, forkJoin, interval, map, of, switchMap, throwError } from 'rxjs';
 import { AuthenticationService } from '@app/auth/services/authentication.service';
 import { Reservation, ReservationStatus } from '@app/models/reservations/reservation.model';
 import { OrderStatus } from '@app/models/orders/order.model';
@@ -181,6 +182,21 @@ export class KitchenDisplayComponent implements OnInit {
 
     this.reservationService.getReservationsForUser$()
       .pipe(
+        switchMap((reservations) =>
+          reservations.length === 0
+            ? of([])
+            : forkJoin(reservations.map((reservation) =>
+              this.ordersService.getByReservationId(reservation.id).pipe(
+                map((preOrder) => ({ ...reservation, preOrder })),
+                catchError((error: unknown) => {
+                  if (error instanceof HttpErrorResponse && error.status === 404) {
+                    return of(reservation);
+                  }
+                  return throwError(() => error);
+                })
+              )
+            ))
+        ),
         catchError(() => {
           if (this.lastUpdated()) {
             this.refreshError.set(true);

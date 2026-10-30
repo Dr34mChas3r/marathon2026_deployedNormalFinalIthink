@@ -33,6 +33,7 @@ import { TableService } from '@app/services/table/table.service';
 import { ToastService } from '@app/services/toast/toast.service';
 import { UsersService } from '@app/services/users/users.service';
 import { WaitersService } from '@app/services/waiters/waiters.service';
+import { getServerErrorMessage } from '@app/shared/helpers/http-error-helpers';
 import { CustomButtonComponent } from '@app/shared/custom-components/custom-button/custom-button.component';
 import { CustomSelectComponent } from '@app/shared/custom-components/custom-select/custom-select.component';
 import { HeaderComponent } from '@app/shared/custom-components/header/header.component';
@@ -338,7 +339,16 @@ export class WaiterDashboardComponent implements OnInit {
           );
           this.toast.success('Reservation has been cancelled.', 'Success');
         },
-        error: () => this.toast.error('The reservation could not be cancelled.', 'Reservation'),
+        error: (error: unknown) => {
+          const message =
+            error instanceof HttpErrorResponse
+              ? getServerErrorMessage(error)
+              : '';
+          this.toast.error(
+            message || 'The reservation could not be cancelled.',
+            'Reservation'
+          );
+        },
       });
   }
 
@@ -357,7 +367,12 @@ export class WaiterDashboardComponent implements OnInit {
           );
           this.toast.success('Table updated successfully.', 'Success');
         },
-        error: () => this.toast.error('The table could not be updated.', 'Reservation'),
+        error: (error: unknown) => this.toast.error(
+          error instanceof HttpErrorResponse
+            ? getServerErrorMessage(error) || 'The table could not be updated.'
+            : 'The table could not be updated.',
+          'Reservation'
+        ),
       });
   }
 
