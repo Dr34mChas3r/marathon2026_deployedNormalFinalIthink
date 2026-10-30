@@ -59,7 +59,7 @@ export class WaiterPreOrderPageComponent implements OnInit {
 
     this.createdByName = data.createdByName;
     this.createdByRole = data.createdByRole;
-    this.tableName = data.tableName;
+    this.tableName = data.tableName || 'Unknown table';
     this.reservationId = data.reservationId;
 
     firstValueFrom(this.preOrdersService.getByReservationId(data.reservationId))

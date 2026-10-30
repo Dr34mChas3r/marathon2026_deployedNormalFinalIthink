@@ -228,7 +228,10 @@ export class CardReservationComponent {
       reservationId: reservation.id,
       createdByName: this.creatorName(),
       createdByRole: this.creatorRole(),
-      tableName: reservation.tableName || 'Unknown table',
+      tableName:
+        this.selectedTableLabel() ||
+        reservation.tableName ||
+        `Table ${reservation.tableId}`,
     };
 
     sessionStorage.setItem(

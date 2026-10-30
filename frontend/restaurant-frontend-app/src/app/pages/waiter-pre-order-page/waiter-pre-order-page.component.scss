@@ -58,73 +58,34 @@
 }
 
 .preorder-actions {
-  // width: 16.75;
-  width: 90%;
-  height: 2.5rem;
+  width: 100%;
+  min-height: 2.5rem;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 0 1rem;
-  gap: 1rem;
+  align-items: center;
   justify-content: center;
+  gap: 1rem;
 }
 
 .btn-cancel,
 .btn-confirm {
   width: 126px;
-}
-
-.btn-cancel {
-  align-self: flex-start;
-  border: 1px solid color.$green-600;
-  border-radius: 0.5rem;
-  height: 2.5rem;
-  font-weight: 600;
-  line-height: 1.5rem;
-  font-size: 0.875rem;
-  color: color.$green-600;
-  text-align: center;
-  cursor: pointer;
-}
-
-::ng-deep .preorder-list app-dish-card [dish-footer] app-custom-button ::ng-deep button {
-  height: 2.5rem;
+  flex: 0 1 126px;
 }
 
 .pre-order-footer {
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
-::ng-deep app-custom-button.btn-cancel > .custom-button {
-  // height: 2.5rem;
-  background-color: color.$neutral-0;
-  color: color.$green-600;
-  border: 1px solid color.$green-600;
-  align-self: flex-start;
-  border-radius: 0.5rem;
-  height: 2.5rem;
-  font-weight: 600;
-  line-height: 1.5rem;
-  font-size: 0.875rem;
-  text-align: center;
-  cursor: pointer;
-
-  &:disabled {
-    color: color.$neutral-0;
-    cursor: not-allowed;
-    border: 1px solid color.$neutral-200;
+@media (max-width: 380px) {
+  .preorder-actions {
+    gap: 0.5rem;
   }
-}
-
-::ng-deep .preorder-list app-dish-card a .dish-info .dish-meta {
-  width: 90%;
-  background-color: aqua;
-}
-::ng-deep .preorder-list app-dish-card a {
-  //  padding-bottom: 0;
-  //  background-color: bisque;
 }
 
 .pre-order-quantity {
